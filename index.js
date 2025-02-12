@@ -11,6 +11,7 @@ app.use(express.static(viewsPath));
 app.use(express.static(publicPath));
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 
 app.get('/mps4aside', async  (req, res) => {
     res.sendFile(path.join(viewsPath, 'getMPSKey.html'));
@@ -77,7 +78,7 @@ app.post('/mmp/geturl', async (req, res) => {
         res.clearCookie("checkpoint", {httpOnly:true});
 
         try {
-            const response = await fetch('https://betterkeysystem.sazawa.workers.dev/?key=IMGENERATINGANEWKEYRAHHHHHHHHHHHHHHH');
+            const response = await fetch('https://betterkeysystem.sazawa.workers.dev/?key=IMGENERATINGANEWKEYRAHHHHHHHHHHHHHHH/&type=MMPFREE');
         
             if (!response.ok) {
               const errorText = await response.text();
@@ -108,7 +109,29 @@ app.post('/mmp/leave', async(req,res) => {
 
 //ADMIN PANEL
 app.get('/admin/login', async (req,res) => {
+    const isAdmin = req.cookies.admin;
+    console.log(req.cookies)
+    if (isAdmin) {
+        res.redirect('/admin/panel')
+        return;
+    }
     res.sendFile(path.join(viewsPath, "adminLogin.html"))
+})
+app.post('/admin/login', async (req,res) => {
+    if (req.body.password == "immaInstaLock123porn") {
+        res.cookie("admin", true, {maxAge: 1000 * 60 * 1, httpOnly: true});
+        res.redirect('/admin/panel')
+        console.log("hey")
+    }
+})
+
+app.get('/admin/panel', async (req,res) => {
+    const isAdmin = req.cookies.admin;
+    if (!isAdmin) {
+        res.redirect('/admin/login')
+        return;
+    }
+    res.sendFile(path.join(viewsPath, 'adminPanel.html'));
 })
 
 app.listen(PORT, () => {
