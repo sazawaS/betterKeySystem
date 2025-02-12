@@ -30,6 +30,7 @@
         const referer = document.referrer;
         let checkpoint = 1;
         let nextUrl = ""
+        let key = ""
 
         fetch("/mmp/getcheckpoint", 
         { 
@@ -42,6 +43,8 @@
             const recievedCheckpoint = json.checkpoint;
             checkpoint = recievedCheckpoint || 1;
             nextUrl = json.nextUrl;
+            key = json.key;
+            console.log(checkpoint, nextUrl, key)
         })
         console.log(referer)
 
@@ -80,9 +83,13 @@
         }
 
         getKeyButton.addEventListener("click", () => {
+            if (checkpoint == 3 && key != null) {
+                keyDisplay.innerHTML = "Your key is: " + key;
+                return;
+            } 
             if (nextUrl != "") {
                 window.location.href = nextUrl;
-            } else if (checkpoint != 1) {
+            } else {
                 keyDisplay.innerHTML = "warning: you seem to have tried to skip the checkpoint, please close this window and try again."
             }
         });

@@ -71,6 +71,7 @@ app.post('/mmp/getcheckpoint', async (req,res)=> {
     if (userCheckpoint == 1) {
         res.json({checkpoint:userCheckpoint, nextUrl:userNextUrl});
         console.log("have a good day finishing that!")
+        return;
     }
 
 
@@ -93,6 +94,7 @@ app.post('/mmp/getcheckpoint', async (req,res)=> {
                     console.log(" uh oh! key is not status code 201!")
                     res.json({checkpoint:userCheckpoint, key:"some error happened while getting key, please try again"})
                 }
+                return;
         
             } catch (error) {
                 console.error("Error getting key:", error);
