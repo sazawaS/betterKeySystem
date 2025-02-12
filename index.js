@@ -58,7 +58,6 @@ app.post('/mmp/getcheckpoint', async (req,res)=> {
     if (req.cookies.checkpoint) {
         userCheckpoint = parseInt(req.cookies.checkpoint);
     }
-    console.log("checkpoint " + userCheckpoint)
     res.json({checkpoint:userCheckpoint})
 })
 
@@ -68,7 +67,7 @@ app.post('/mmp/geturl', async (req, res) => {
     if (req.cookies.checkpoint) {
         userCheckpoint = parseInt(req.cookies.checkpoint);
     }
-    if (userCheckpoint != 1 && req.referrer != "https://lootdest.org/") {
+    if (userCheckpoint != 1 && req.body.referrer != "https://lootdest.org/") {
         res.clearCookie("checkpoint", {httpOnly:true});
         console.log("tried a bypass, nuh uh! ", req.referrer)
         res.json({url:"",key:""})
@@ -83,7 +82,6 @@ app.post('/mmp/geturl', async (req, res) => {
     userCheckpoint += 1;
     res.cookie("checkpoint", userCheckpoint, {maxAge: 1000 * 60 * 10, httpOnly: true});
     const checkPoinToSend = checkpointToKey[userCheckpoint-1]
-    console.log("sending " + checkPoinToSend, " and checkpoint will be: ", userCheckpoint)
     res.json({url:checkPoinToSend});
 })
 
