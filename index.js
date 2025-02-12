@@ -71,16 +71,19 @@ app.post('/mmp/geturl', async (req, res) => {
     }
     if (userCheckpoint != 1 && req.referrer != "https://lootdest.org/") {
         res.clearCookie("checkpoint", {httpOnly:true});
+        console.log(userCheckpoint, req.referrer)
         res.json({url:"",key:""})
         return;
     }
     if (userCheckpoint == 3) {
         res.clearCookie("checkpoint", {httpOnly:true});
+        console.log('sent key!')
         res.json({key:"testkey123"})
         return;
     }
     userCheckpoint += 1;
     res.cookie("checkpoint", userCheckpoint, {maxAge: 1000 * 60 * 10, httpOnly: true});
+    console.log("sending " + checkpointToKey[userCheckpoint-1])
     res.json({url:checkpointToKey[userCheckpoint-1]});
 })
 

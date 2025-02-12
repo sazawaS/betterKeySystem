@@ -94,6 +94,7 @@
 
                 if (checkpoint != 3) {
                     const recievedUrl = json.url;
+                    console.log(recievedKey)
                     if (recievedUrl == "") {
                         keyDisplay.innerHTML = "Warning! You seem to have tried to bypass the link! Please close this tab and open a new one to try again!"
                     } else { 
@@ -104,6 +105,7 @@
                 }
 
                 const recievedKey = json.url;
+                console.log(recievedKey)
                 if (recievedKey == "") {
                     keyDisplay.innerHTML = "Warning! You seem to have tried to bypass the link! Please close this tab and open a new one to try again!"
                 } else {
