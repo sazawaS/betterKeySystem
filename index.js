@@ -78,6 +78,7 @@ app.post('/mmp/getcheckpoint', async (req,res)=> {
 
     if (req.body.referrer == "https://lootdest.org/") {
         userCheckpoint += 1;
+        req.body.session.checkpoint = userCheckpoint;
         userNextUrl = checkpointToKey[userCheckpoint];
         console.log("congrats! you didn't bypass!")
 
