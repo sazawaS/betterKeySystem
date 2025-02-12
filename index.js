@@ -30,7 +30,6 @@ app.post('/mps4aside', async  (req, res) => {
             }
         
             const responseText = await response.text();
-            console.log(responseText)
             res.json({key:responseText})
     
         } catch (error) {
@@ -71,7 +70,7 @@ app.post('/mmp/geturl', async (req, res) => {
     }
     if (userCheckpoint != 1 && req.referrer != "https://lootdest.org/") {
         res.clearCookie("checkpoint", {httpOnly:true});
-        console.log(userCheckpoint, req.referrer)
+        console.log("tried a bypass, nuh uh! ", req.referrer)
         res.json({url:"",key:""})
         return;
     }
@@ -83,13 +82,13 @@ app.post('/mmp/geturl', async (req, res) => {
     }
     userCheckpoint += 1;
     res.cookie("checkpoint", userCheckpoint, {maxAge: 1000 * 60 * 10, httpOnly: true});
-    console.log("sending " + checkpointToKey[userCheckpoint-1])
-    res.json({url:checkpointToKey[userCheckpoint-1]});
+    const checkPoinToSend = checkpointToKey[userCheckpoint-1]
+    console.log("sending " + checkPoinToSend, " and checkpoint will be: ", userCheckpoint)
+    res.json({url:checkPoinToSend});
 })
 
 app.post('/mmp/leave', async(req,res) => {
     res.clearCookie("checkpoint", {httpOnly:true});
-    console.log('destroyed this cokie')
 })
 
 
