@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="/adminPanelStyles.css">
+</head>
+<body>
+    <div class="admin-panel">
+        <h1>Nigga Bigga</h1>
+        
+        <div class="management-section">
+            <h2>Script Management</h2>
+            <button id="createScriptBtn">Create New Script</button>
+            <button id="viewScriptsBtn">View Scripts</button>
+        </div>
+        
+        <div class="management-section">
+            <h2>Key Management</h2>
+            <button id="createKeyBtn">Create New Key</button>
+            <button id="viewKeysBtn">View Keys</button>
+        </div>
+
+        <!-- Create New Script Modal -->
+        <div id="createScriptModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Create New Script</h2>
+                <form id="createScriptForm">
+                    <label for="scriptName">Script Name:</label>
+                    <input type="text" id="scriptName" name="scriptName" required>
+                    <label for="scriptContent">Script Content:</label>
+                    <textarea id="scriptContent" name="scriptContent" rows="10" required></textarea>
+                    <button type="submit">Save Script</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- View Scripts Modal -->
+        <div id="viewScriptsModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>View Scripts</h2>
+                <div id="scriptsList"></div>
+            </div>
+        </div>
+
+        <!-- Create New Key Modal -->
+        <div id="createKeyModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Create New Key</h2>
+                <form id="createKeyForm">
+                    <label for="keyName">Key:</label>
+                    <input type="text" id="keyName" name="keyName" required>
+                    <label for="expireTimer">Expire Timer (in milliseconds):</label>
+                    <input type="number" id="expireTimer" name="expireTimer" required>
+                    <label for="keyTypes">Types (comma-separated):</label>
+                    <input type="text" id="keyTypes" name="keyTypes" required>
+                    <button type="submit">Save Key</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- View Keys Modal -->
+        <div id="viewKeysModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>View Keys</h2>
+                <div id="keysList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const createScriptBtn = document.getElementById('createScriptBtn');
+            const viewScriptsBtn = document.getElementById('viewScriptsBtn');
+            const createKeyBtn = document.getElementById('createKeyBtn');
+            const viewKeysBtn = document.getElementById('viewKeysBtn');
+            const createScriptModal = document.getElementById('createScriptModal');
+            const viewScriptsModal = document.getElementById('viewScriptsModal');
+            const createKeyModal = document.getElementById('createKeyModal');
+            const viewKeysModal = document.getElementById('viewKeysModal');
+            const closeButtons = document.querySelectorAll('.close');
+            const createScriptForm = document.getElementById('createScriptForm');
+            const createKeyForm = document.getElementById('createKeyForm');
+            const scriptsList = document.getElementById('scriptsList');
+            const keysList = document.getElementById('keysList');
+
+            // Open Create Script Modal
+            createScriptBtn.onclick = function() {
+                createScriptModal.style.display = 'block';
+            }
+
+            // Open View Scripts Modal
+            viewScriptsBtn.onclick = function() {
+                viewScriptsModal.style.display = 'block';
+                fetchScripts();
+            }
+
+            // Open Create Key Modal
+            createKeyBtn.onclick = function() {
+                createKeyModal.style.display = 'block';
+            }
+
+            // Open View Keys Modal
+            viewKeysBtn.onclick = function() {
+                viewKeysModal.style.display = 'block';
+                fetchKeys();
+            }
+
+            // Close Modals
+            closeButtons.forEach(button => {
+                button.onclick = function() {
+                    createScriptModal.style.display = 'none';
+                    viewScriptsModal.style.display = 'none';
+                    createKeyModal.style.display = 'none';
+                    viewKeysModal.style.display = 'none';
+                }
+            });
+
+            // Close Modal when clicking outside of it
+            window.onclick = function(event) {
+                if (event.target == createScriptModal) {
+                    createScriptModal.style.display = 'none';
+                }
+                if (event.target == viewScriptsModal) {
+                    viewScriptsModal.style.display = 'none';
+                }
+                if (event.target == createKeyModal) {
+                    createKeyModal.style.display = 'none';
+                }
+                if (event.target == viewKeysModal) {
+                    viewKeysModal.style.display = 'none';
+                }
+            }
+
+            // Handle Create Script Form Submission
+            createScriptForm.onsubmit = function(event) {
+                event.preventDefault();
+                const scriptName = document.getElementById('scriptName').value;
+                const scriptContent = document.getElementById('scriptContent').value;
+
+                // Send data to server (you will handle this part)
+                console.log('Script Name:', scriptName);
+                console.log('Script Content:', scriptContent);
+
+                // Clear form and close modal
+                createScriptForm.reset();
+                createScriptModal.style.display = 'none';
+            }
+
+            // Handle Create Key Form Submission
+            createKeyForm.onsubmit = function(event) {
+                event.preventDefault();
+                const keyName = document.getElementById('keyName').value;
+                const expireTimer = document.getElementById('expireTimer').value;
+                const keyTypes = document.getElementById('keyTypes').value.split(',');
+
+                // Send data to server (you will handle this part)
+                console.log('Key:', keyName);
+                console.log('Expire Timer:', expireTimer);
+                console.log('Types:', keyTypes);
+
+                // Clear form and close modal
+                createKeyForm.reset();
+                createKeyModal.style.display = 'none';
+            }
+
+            // Fetch Scripts from Server
+            function fetchScripts() {
+                // Simulate a POST request to fetch scripts
+                // Replace this with actual fetch call to your server
+                const scripts = [
+                    { id: 1, name: 'Script 1', content: 'console.log("Hello World");' },
+                    { id: 2, name: 'Script 2', content: 'alert("This is a script");' }
+                ];
+
+                scriptsList.innerHTML = '';
+                scripts.forEach(script => {
+                    const scriptItem = document.createElement('div');
+                    scriptItem.className = 'script-item';
+                    scriptItem.innerHTML = `
+                        <span>${script.name}</span>
+                        <button class="delete-btn" onclick="deleteScript(${script.id})">Delete</button>
+                    `;
+                    scriptsList.appendChild(scriptItem);
+                });
+            }
+
+            // Fetch Keys from Server
+            function fetchKeys() {
+                // Simulate a POST request to fetch keys
+                // Replace this with actual fetch call to your server
+                const keys = [
+                    { id: 1, key: 'mykey1', expireTimer: 1000 * 60 * 60, types: ['Script1', 'Script2'] },
+                    { id: 2, key: 'mykey2', expireTimer: 1000 * 60 * 30, types: ['Script3', 'Script4'] }
+                ];
+
+                keysList.innerHTML = '';
+                keys.forEach(key => {
+                    const keyItem = document.createElement('div');
+                    keyItem.className = 'key-item';
+                    keyItem.innerHTML = `
+                        <div>
+                            <strong>Key:</strong> ${key.key}<br>
+                            <strong>Time Left:</strong> ${key.expireTimer} ms<br>
+                            <strong>Types:</strong> ${key.types.join(', ')}
+                        </div>
+                        <div>
+                            <button class="edit-btn" onclick="editKey(${key.id})">Edit</button>
+                            <button class="delete-btn" onclick="deleteKey(${key.id})">Delete</button>
+                        </div>
+                    `;
+                    keysList.appendChild(keyItem);
+                });
+            }
+
+            // Delete Script
+            window.deleteScript = function(scriptId) {
+                // Send request to delete script (you will handle this part)
+                console.log('Deleting script with ID:', scriptId);
+                fetchScripts(); // Refresh the list after deletion
+            }
+
+            // Edit Key
+            window.editKey = function(keyId) {
+                // Send request to edit key (you will handle this part)
+                console.log('Editing key with ID:', keyId);
+            }
+
+            // Delete Key
+            window.deleteKey = function(keyId) {
+                // Send request to delete key (you will handle this part)
+                console.log('Deleting key with ID:', keyId);
+                fetchKeys(); // Refresh the list after deletion
+            }
+        });
+    </script>
+</body>
+</html>

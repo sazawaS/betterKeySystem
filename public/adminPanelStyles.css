@@ -1,0 +1,162 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #e0f7fa, #80deea); /* Light blue gradient */
+    min-height: 100vh;
+}
+
+.admin-panel {
+    padding: 20px;
+    max-width: 800px;
+    margin: 20px auto;
+    background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+h1 {
+    text-align: center;
+    color: #01579b; /* Dark blue */
+}
+
+.management-section {
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.95); /* Semi-transparent white */
+    border: 1px solid #b3e5fc; /* Light blue border */
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.management-section h2 {
+    margin-top: 0;
+    color: #0277bd; /* Medium blue */
+    font-size: 1.5em;
+    border-bottom: 1px solid #b3e5fc; /* Light blue border */
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 10px;
+    background-color: #0288d1; /* Medium blue */
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #01579b; /* Darker blue */
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: rgba(255, 255, 255, 0.95); /* Semi-transparent white */
+    margin: 10% auto;
+    padding: 20px;
+    padding-right: 30px;
+    border: 1px solid #b3e5fc; /* Light blue border */
+    width: 80%;
+    max-width: 600px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #01579b; /* Dark blue */
+}
+
+form label {
+    display: block;
+    margin: 10px 0 5px;
+    color: #0277bd; /* Medium blue */
+}
+
+form input, form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #b3e5fc; /* Light blue border */
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
+}
+
+form button {
+    width: 100%;
+    padding: 10px;
+    background-color: #0288d1; /* Medium blue */
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+form button:hover {
+    background-color: #01579b; /* Darker blue */
+}
+
+#scriptsList, #keysList {
+    margin-top: 20px;
+}
+
+.script-item, .key-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #b3e5fc; /* Light blue border */
+    background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.script-item:last-child, .key-item:last-child {
+    border-bottom: none;
+}
+
+.delete-btn, .edit-btn {
+    background-color: #d32f2f; /* Red */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-left: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.edit-btn {
+    background-color: #ffa000; /* Amber */
+}
+
+.delete-btn:hover {
+    background-color: #b71c1c; /* Darker red */
+}
+
+.edit-btn:hover {
+    background-color: #ff8f00; /* Darker amber */
+}
