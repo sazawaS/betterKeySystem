@@ -65,7 +65,13 @@ app.get('/mmp', async (req,res) => {
 
 app.post('/mmp/getcheckpoint', async (req,res)=> {
     
-    let userCheckpoint = req.session.user.checkpoint;
+
+    let userCheckpoint = 1;
+    if (req.session && req.session.user) {
+        userCheckpoint = req.session.user.checkpoint;
+    } else {
+        req.session.user = {checkpoint:1}
+    }
     let userNextUrl = checkpointToKey[userCheckpoint];
 
     if (userCheckpoint == 1) {
