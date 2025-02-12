@@ -82,6 +82,7 @@ app.post('/mmp/geturl', async (req, res) => {
     userCheckpoint += 1;
     res.cookie("checkpoint", userCheckpoint, {maxAge: 1000 * 60 * 10, httpOnly: true});
     const checkPoinToSend = checkpointToKey[userCheckpoint-1]
+    console.log("sending " + checkPoinToSend)
     res.json({url:checkPoinToSend});
 })
 
