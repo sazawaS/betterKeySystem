@@ -42,8 +42,8 @@ app.post('/mps4aside', async  (req, res) => {
 
 const checkpointToKey = {
     [1]: "https://lootdest.org/s?RwLz3rc7",
-    [2]: "https://lootdest.org/s?qKyAjyH1",
-    [3]: "https://lootdest.org/s?yRoTGZH0",
+    [2]: "https://lootdest.org/s?VcnBoO9V", 
+    [3]: "https://lootdest.org/s?rHV5QjUP",
 }
 
 //-----MMP KEY-------//
