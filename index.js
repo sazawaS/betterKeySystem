@@ -78,7 +78,7 @@ app.post('/mmp/geturl', async (req, res) => {
         res.clearCookie("checkpoint", {httpOnly:true});
 
         try {
-            const response = await fetch('https://betterkeysystem.sazawa.workers.dev/?key=IMGENERATINGANEWKEYRAHHHHHHHHHHHHHHH/&type=MMPFREE');
+            const response = await fetch('https://betterkeysystem.sazawa.workers.dev/?key=IMGENERATINGANEWKEYRAHHHHHHHHHHHHHHH&type=MMPFREE');
         
             if (!response.ok) {
               const errorText = await response.text();
