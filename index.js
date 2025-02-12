@@ -56,58 +56,37 @@ app.post('/mmp/getcheckpoint', async (req,res)=> {
     
 
     let userCheckpoint = 1;
-
     if (req.cookies.checkpoint) {
         userCheckpoint = parseInt(req.cookies.checkpoint);
-    } else {
-        res.cookie('checkpoint', 1, { httpOnly: true, sameSite: 'strict', secure: process.env.NODE_ENV === 'production' });
     }
+    console.log("checkpoint " + userCheckpoint)
+    res.json({checkpoint:userCheckpoint})
+})
 
-    let userNextUrl = checkpointToKey[userCheckpoint];
+app.post('/mmp/geturl', async (req, res) => {
 
-    if (userCheckpoint == 1) {
-        res.json({checkpoint:userCheckpoint, nextUrl:userNextUrl});
-        console.log("have a good day finishing that!")
+    let userCheckpoint = 1;
+    if (req.cookies.checkpoint) {
+        userCheckpoint = parseInt(req.cookies.checkpoint);
+    }
+    if (userCheckpoint != 1 && req.referrer != "https://lootdest.org/") {
+        res.clearCookie("checkpoint", {httpOnly:true});
+        res.json({url:"",key:""})
         return;
     }
-
-
-
-    if (req.body.referrer == "https://lootdest.org/") {
-        userCheckpoint += 1;
-        res.cookie('checkpoint', userCheckpoint, { httpOnly: true, sameSite: 'strict', secure: process.env.NODE_ENV === 'production' }); // Update cookie
-        userNextUrl = checkpointToKey[userCheckpoint];
-        console.log("congrats! you didn't bypass!")
-
-        if (userCheckpoint == 3) {
-
-            res.clearCookie('checkpoint', { httpOnly: true, sameSite: 'strict', secure: process.env.NODE_ENV === 'production' });
-
-            try {
-                const response = await fetch('https://betterkeysystem.sazawa.workers.dev/?key=IMGENERATINGANEWKEYRAHHHHHHHHHHHHHHH');
-                
-                if (response.status == 201) {
-                    const responseText = await response.text();
-                    console.log(" congrats! you got key " + responseText)
-                    res.json({checkpoint:userCheckpoint, key:responseText})
-                } else {
-                    console.log(" uh oh! key is not status code 201!")
-                    res.json({checkpoint:userCheckpoint, key:"some error happened while getting key, please try again"})
-                }
-                return;
-        
-            } catch (error) {
-                console.error("Error getting key:", error);
-                res.status(500).json({checkpoint:userCheckpoint, key:"Error getting key"});
-            }
-        }
-
-    } else {
-        res.clearCookie('checkpoint', { httpOnly: true, sameSite: 'strict', secure: process.env.NODE_ENV === 'production' });
-        userNextUrl = ""
-        console.log("congrats! you tried bypassing!")
+    if (userCheckpoint == 3) {
+        res.clearCookie("checkpoint", {httpOnly:true});
+        res.json({key:"testkey123"})
+        return;
     }
-    res.json({checkpoint:userCheckpoint, nextUrl:userNextUrl});
+    userCheckpoint += 1;
+    res.cookie("checkpoint", userCheckpoint, {maxAge: 1000 * 60 * 10, httpOnly: true});
+    res.json({url:checkpointToKey[userCheckpoint-1]});
+})
+
+app.post('/mmp/leave', async(req,res) => {
+    res.clearCookie("checkpoint", {httpOnly:true});
+    console.log('destroyed this cokie')
 })
 
 

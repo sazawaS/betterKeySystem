@@ -31,6 +31,7 @@
         let checkpoint = 1;
         let nextUrl = ""
         let key = ""
+        let des = false;
 
         fetch("/mmp/getcheckpoint", 
         { 
@@ -41,12 +42,14 @@
         .then((response) => response.json())
         .then((json)=> {
             const recievedCheckpoint = json.checkpoint;
-            checkpoint = recievedCheckpoint || 1;
-            nextUrl = json.nextUrl;
-            key = json.key;
-            console.log(checkpoint, nextUrl, key)
+            checkpoint = recievedCheckpoint;
+            console.log(checkpoint)
+            console.log(referer)
+            if (checkpoint > 1) {
+                setSliderPosition(checkpoint - 1);
+                animateSlider(checkpoint)
+            }
         })
-        console.log(referer)
 
         function animateSlider(targetCheckpoint) {
             const thumbWidth = sliderThumb.offsetWidth;
@@ -55,7 +58,7 @@
             const endPosition = ((targetCheckpoint - 1) / 2) * (trackWidth - thumbWidth);
 
             let currentPosition = startPosition;
-            const duration = 500;
+            const duration = 750;
             const startTime = performance.now();
 
             function step(timestamp) {
@@ -71,10 +74,7 @@
             requestAnimationFrame(step);
         }
 
-        if (checkpoint > 1) {
-            setSliderPosition(checkpoint - 1);
-            animateSlider(checkpoint)
-        }
+
         function setSliderPosition(checkpoint) {
             const thumbWidth = sliderThumb.offsetWidth;
             const trackWidth = document.querySelector('.slider-track').offsetWidth;
@@ -83,16 +83,43 @@
         }
 
         getKeyButton.addEventListener("click", () => {
-            if (checkpoint == 3 && key != null) {
-                keyDisplay.innerHTML = "Your key is: " + key;
-                return;
-            } 
-            if (nextUrl != "") {
-                window.location.href = nextUrl;
-            } else {
-                keyDisplay.innerHTML = "warning: you seem to have tried to skip the checkpoint, please close this window and try again."
+            fetch("/mmp/geturl", 
+            { 
+                method: "POST",
+                body: JSON.stringify({referrer:referer}),
+                headers: {"Content-type": "application/json; charset=UTF-8"}
+            })
+            .then((response) => response.json())
+            .then((json)=> {
+
+                if (checkpoint != 3) {
+                    const recievedUrl = json.url;
+                    if (recievedUrl == "") {
+                        keyDisplay.innerHTML = "Warning! You seem to have tried to bypass the link! Please close this tab and open a new one to try again!"
+                    } else { 
+                        des = true;
+                        window.location.href = recievedUrl;
+                    }
+                    return;
+                }
+
+                const recievedKey = json.url;
+                if (recievedKey == "") {
+                    keyDisplay.innerHTML = "Warning! You seem to have tried to bypass the link! Please close this tab and open a new one to try again!"
+                } else {
+                    keyDisplay.innerHTML = "Your key is: " + recievedKey;
+                }
+
+
+            })
+        });
+
+        window.addEventListener('beforeunload', function (e) {
+            if (des == false) {
+                fetch("/mmp/leave", {method: "POST"})
             }
         });
+
 
     </script>
 </body>
