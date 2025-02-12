@@ -1,0 +1,65 @@
+/* style.css */
+
+body {
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #397699;
+    margin: 0; /* Remove default body margin */
+}
+
+.login-container {
+    background-color: rgba(255, 255, 255, 0.767);
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center; /* Center the heading and form */
+    width: 300px; /* Set a specific width */
+}
+
+.login-container h2 {
+    margin-bottom: 20px;
+    color: #333; /* Darker heading color */
+}
+
+.input-group {
+    margin-bottom: 15px; /* Spacing between input groups */
+    text-align: left; /* Align labels to the left */
+}
+
+.input-group label {
+    display: block; /* Make label a block element */
+    margin-bottom: 5px; /* Space between label and input */
+    color: #555; /* Slightly darker label color */
+}
+
+
+input[type="password"] {
+    width: calc(100% - 12px); /* Adjust width for padding and border */
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Add transition effect */
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Optional styling for form error messages (if you add them later) */
+.error-message {
+    color: red;
+    margin-top: 10px;
+}
