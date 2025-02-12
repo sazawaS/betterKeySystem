@@ -47,9 +47,9 @@ app.post('/mps4aside', async  (req, res) => {
 
 
 const checkpointToKey = {
-    [1]: "",
-    [2]: "",
-    [3]: "",
+    [1]: "https://lootdest.org/s?RwLz3rc7",
+    [2]: "https://lootdest.org/s?qKyAjyH1",
+    [3]: "https://lootdest.org/s?yRoTGZH0",
 }
 //-----MMP KEY-------//
 app.get('/mmp', async (req,res) => {
@@ -66,14 +66,44 @@ app.get('/mmp', async (req,res) => {
 app.post('/mmp/getcheckpoint', async (req,res)=> {
     
     let userCheckpoint = req.session.user.checkpoint;
-    let userNextUrl = ""
+    let userNextUrl = checkpointToKey[userCheckpoint];
 
-    console.log(req.body.referrer)
-    if (req.body.referrer == checkpointToKey[userCheckpoint]) {
+    if (userCheckpoint == 1) {
+        res.json({checkpoint:userCheckpoint, nextUrl:userNextUrl});
+        console.log("have a good day finishing that!")
+    }
+
+
+
+    if (req.body.referrer == "https://lootdest.org/") {
         userCheckpoint += 1;
         userNextUrl = checkpointToKey[userCheckpoint];
-    } else {
+        console.log("congrats! you didn't bypass!")
+
+        if (userCheckpoint == 3) {
+
+            try {
+                const response = await fetch('https://betterkeysystem.sazawa.workers.dev/?key=IMGENERATINGANEWKEYRAHHHHHHHHHHHHHHH');
+            
+                if (response.status == 201) {
+                    const responseText = await response.text();
+                    console.log(" congrats! you got key " + responseText)
+                    res.json({checkpoint:userCheckpoint, key:responseText})
+                } else {
+                    console.log(" uh oh! key is not status code 201!")
+                    res.json({checkpoint:userCheckpoint, key:"some error happened while getting key, please try again"})
+                }
         
+            } catch (error) {
+                console.error("Error getting key:", error);
+                res.status(500).json({checkpoint:userCheckpoint, key:"Error getting key"});
+            }
+        }
+
+    } else {
+        req.session.destroy()
+        userNextUrl = ""
+        console.log("congrats! you tried bypassing!")
     }
     res.json({checkpoint:userCheckpoint, nextUrl:userNextUrl});
 })

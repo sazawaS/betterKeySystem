@@ -80,18 +80,13 @@
         }
 
         getKeyButton.addEventListener("click", () => {
-            keyDisplay.textContent = "Getting key for Checkpoint " + checkpoint + "...";
-
-            setTimeout(() => {
-                const simulatedKey = generateSimulatedKey(checkpoint);
-                keyDisplay.textContent = "Key received: " + simulatedKey;
-            }, 1500);
+            if (nextUrl != "") {
+                window.location.href = nextUrl;
+            } else if (checkpoint != 1) {
+                keyDisplay.innerHTML = "warning: you seem to have tried to skip the checkpoint, please close this window and try again."
+            }
         });
 
-
-        function generateSimulatedKey(checkpoint) {
-            return "MMP-KEY-" + checkpoint + "-" + Math.random().toString(36).substring(2, 15);
-        }
     </script>
 </body>
 </html>
