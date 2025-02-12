@@ -32,6 +32,7 @@
         let nextUrl = ""
         let key = ""
         let des = false;
+        let alreadyGot = false;
 
         fetch("/mmp/getcheckpoint", 
         { 
@@ -83,6 +84,17 @@
         }
 
         getKeyButton.addEventListener("click", () => {
+
+            if (alreadyGot) { return }
+            alreadyGot = true;
+
+            keyDisplay.classList.add("getting")
+            if (checkpoint == 3) {
+                keyDisplay.innerHTML = "Getting your key..."
+            } else {
+                keyDisplay.innerHTML = "Getting your link..."
+            }
+
             fetch("/mmp/geturl", 
             { 
                 method: "POST",
@@ -104,7 +116,8 @@
                     return;
                 }
 
-                const recievedKey = json.url;
+                const recievedKey = json.key;
+                keyDisplay.classList.remove("getting")
                 console.log(recievedKey)
                 if (recievedKey == "") {
                     keyDisplay.innerHTML = "Warning! You seem to have tried to bypass the link! Please close this tab and open a new one to try again!"

@@ -75,14 +75,27 @@ app.post('/mmp/geturl', async (req, res) => {
     }
     if (userCheckpoint == 3) {
         res.clearCookie("checkpoint", {httpOnly:true});
-        console.log('sent key!')
-        res.json({key:"testkey123"})
+
+        try {
+            const response = await fetch('https://betterkeysystem.sazawa.workers.dev/?key=IMGENERATINGANEWKEYRAHHHHHHHHHHHHHHH');
+        
+            if (!response.ok) {
+              const errorText = await response.text();
+              throw new Error(`HTTP error ${response.status}: ${errorText}`);
+            }
+        
+            const responseText = await response.text();
+            res.json({key:responseText})
+    
+        } catch (error) {
+            console.error("Error getting key:", error);
+            res.status(500).json({key:"Error getting key"});
+        }
         return;
     }
     userCheckpoint += 1;
     res.cookie("checkpoint", userCheckpoint, {maxAge: 1000 * 60 * 10, httpOnly: true});
     const checkPoinToSend = checkpointToKey[userCheckpoint-1]
-    console.log("sending " + checkPoinToSend)
     res.json({url:checkPoinToSend});
 })
 

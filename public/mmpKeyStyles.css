@@ -81,3 +81,7 @@ body {
 #getKey:hover {
     background-color: #0056b3;
 }
+
+#key.getting {
+    color: #888;
+}
