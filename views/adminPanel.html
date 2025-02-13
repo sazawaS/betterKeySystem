@@ -89,53 +89,52 @@
             const scriptsList = document.getElementById('scriptsList');
             const keysList = document.getElementById('keysList');
 
-            // Open Create Script Modal
+            // Open Create Script Modal with Animation
             createScriptBtn.onclick = function() {
                 createScriptModal.style.display = 'block';
+                createScriptModal.style.animation = 'fadeIn 0.3s ease';
             }
 
-            // Open View Scripts Modal
+            // Open View Scripts Modal with Animation
             viewScriptsBtn.onclick = function() {
                 viewScriptsModal.style.display = 'block';
+                viewScriptsModal.style.animation = 'fadeIn 0.3s ease';
                 fetchScripts();
             }
 
-            // Open Create Key Modal
+            // Open Create Key Modal with Animation
             createKeyBtn.onclick = function() {
                 createKeyModal.style.display = 'block';
+                createKeyModal.style.animation = 'fadeIn 0.3s ease';
             }
 
-            // Open View Keys Modal
+            // Open View Keys Modal with Animation
             viewKeysBtn.onclick = function() {
                 viewKeysModal.style.display = 'block';
+                viewKeysModal.style.animation = 'fadeIn 0.3s ease';
                 fetchKeys();
             }
 
-            // Close Modals
+            // Close Modals with Animation
             closeButtons.forEach(button => {
                 button.onclick = function() {
-                    createScriptModal.style.display = 'none';
-                    viewScriptsModal.style.display = 'none';
-                    createKeyModal.style.display = 'none';
-                    viewKeysModal.style.display = 'none';
+                    const modal = button.closest('.modal');
+                    modal.style.animation = 'fadeOut 0.3s ease';
+                    setTimeout(() => {
+                        modal.style.display = 'none';
+                    }, 300); // Match the animation duration
                 }
             });
 
             // Close Modal when clicking outside of it
             window.onclick = function(event) {
-                if (event.target == createScriptModal) {
-                    createScriptModal.style.display = 'none';
+                if (event.target == createScriptModal || event.target == viewScriptsModal || event.target == createKeyModal || event.target == viewKeysModal) {
+                    event.target.style.animation = 'fadeOut 0.3s ease';
+                    setTimeout(() => {
+                        event.target.style.display = 'none';
+                    }, 300); // Match the animation duration
                 }
-                if (event.target == viewScriptsModal) {
-                    viewScriptsModal.style.display = 'none';
-                }
-                if (event.target == createKeyModal) {
-                    createKeyModal.style.display = 'none';
-                }
-                if (event.target == viewKeysModal) {
-                    viewKeysModal.style.display = 'none';
-                }
-            }
+}
 
             // Handle Create Script Form Submission
             createScriptForm.onsubmit = function(event) {
