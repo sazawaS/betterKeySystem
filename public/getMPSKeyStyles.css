@@ -1,63 +1,85 @@
-/* getMPSKeyStyles.css */
-
+/* Dark Theme Base */
 body {
-    font-family: sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
+    font-family: Arial, sans-serif;
     margin: 0;
-    background-color: #397699;
+    padding: 0;
+    background-color: #121212; /* Dark background */
+    color: #e0e0e0; /* Light text */
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
+/* Snowflake Container */
+#snowflakes {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Allow clicks to pass through */
+    overflow: hidden;
+    z-index: -1; /* Place behind other content */
+}
+
+.snowflake {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: white;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    animation: fall linear infinite;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(100vh);
+    }
+}
+
+/* Key Container */
 #getKeyContainer {
-    background-color: #e2ecf08c; /* Slightly darker background */
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    background-color: #1e1e1e; /* Darker container background */
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     text-align: center;
-    margin-bottom: 20px;
-    width: 400px; /* Set a specific width or use a percentage */
-    /* or */
-    /* width: 80%; */ /* 80% of its parent's width */
-    max-width: 500px; /* Optional: Set a maximum width */
+    width: 400px;
+    max-width: 90%;
 }
 
 #key {
     font-size: 1.2em;
-    margin-bottom: 10px;
-    color: #333;
+    margin-bottom: 20px;
+    color: #bb86fc; /* Purple accent */
+    transition: opacity 0.3s ease, color 0.3s ease;
+}
+
+#key.getting {
+    color: #e0e0e0; /* Light text when loading */
+    opacity: 0.8;
 }
 
 button {
     padding: 10px 20px;
-    background-color: #007bff;
+    background-color: #6200ea; /* Dark purple */
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 1em;
-    transition: background-color 0.3s ease;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #3700b3; /* Darker purple */
+    transform: scale(1.05); /* Enlarge on hover */
 }
 
-.alert {
-    background-color: #f44336;
-    color: white;
-    padding: 10px;
-    margin-top: 10px;
-    border-radius: 5px;
-}
-
-#key, button {
-    margin: 10px 0;
-}
-
-#key.getting {
-    color: #888;
+button:disabled {
+    background-color: #333; /* Disabled state */
+    cursor: not-allowed;
+    opacity: 0.7;
 }
