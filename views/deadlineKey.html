@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Key For Deadline</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="/getMPSKeyStyles.css">
+    </head>
+    <body> 
+        <!-- Snowflake Container -->
+        <div id="snowflakes"></div>
+
+        <!-- Key Container -->
+        <div id="getKeyContainer">
+            <p id="key">Get Key Here:</p>
+            <button id="getKey">Get Key</button>
+        </div>
+
+        <script>
+            var gottenKeyOnce = false;
+            const referer = document.referrer;
+            var buttonElement = document.getElementById("getKey")
+            buttonElement.addEventListener("click", function(e) {
+                if (gottenKeyOnce) {return}
+                document.getElementById("key").innerHTML = "Getting key..."
+                document.getElementById("key").classList.add("getting");
+
+                fetch("/deadline", 
+                { 
+                    method: "POST",
+                    body: JSON.stringify({referrer:referer}),
+                    headers: {"Content-type": "application/json; charset=UTF-8"}
+                })
+                .then((response) => response.json())
+                .then((json) => {
+                    const keyRecieved = json.key
+                    document.getElementById("key").classList.remove("getting");
+                    if (keyRecieved != "") {
+                        document.getElementById("key").innerHTML = "Key recieved: " + json.key;
+                    } else {
+                        window.location.href="https://loot-link.com/s?IS7YbpKv"
+                    }
+                });
+                gottenKeyOnce = true;
+            });
+
+                // Snowflake Generation
+                function createSnowflakes() {
+                const snowflakesContainer = document.getElementById('snowflakes');
+
+                for (let i = 0; i < 50; i++) {
+                    const snowflake = document.createElement('div');
+                    snowflake.className = 'snowflake';
+                    snowflake.style.left = `${Math.random() * 100}vw`;
+                    snowflake.style.top = `${Math.random() * 100}vh`;
+                    snowflake.style.animationDuration = `${Math.random() * 5 + 5}s`; // Random fall speed
+                    snowflake.style.opacity = Math.random(); // Random opacity
+                    snowflake.style.width = `${Math.random() * 10 + 5}px`; // Random size
+                    snowflake.style.height = snowflake.style.width;
+
+                    snowflakesContainer.appendChild(snowflake);
+                }
+            }
+
+            // Snowflake Interaction
+            document.addEventListener('mousemove', (e) => {
+                const snowflakes = document.querySelectorAll('.snowflake');
+                const mouseX = e.clientX;
+                const mouseY = e.clientY;
+
+                snowflakes.forEach((snowflake) => {
+                    const rect = snowflake.getBoundingClientRect();
+                    const snowflakeX = rect.left + rect.width / 2;
+                    const snowflakeY = rect.top + rect.height / 2;
+
+                    const distance = Math.sqrt((mouseX - snowflakeX) ** 2 + (mouseY - snowflakeY) ** 2);
+                    const distanceVecX = (snowflakeX - mouseX)/30;
+                    const distanceVecY = (snowflakeY - mouseY)/30;
+
+                    if (distance < 100) { // If mouse is within 100px of the snowflake
+                        const angle = Math.atan2(mouseY - snowflakeY, mouseX - snowflakeX);
+                        const speed = 5; // Speed at which snowflake moves away
+                        snowflake.style.transform = `translate(${distanceVecX}px, ${distanceVecY}px)`;
+                    }
+                });
+            });
+            createSnowflakes()
+        </script>
+    </body>
+</html>

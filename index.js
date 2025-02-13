@@ -40,6 +40,33 @@ app.post('/mps4aside', async  (req, res) => {
     }
 });
 
+app.get('/deadline', async  (req, res) => {
+    res.sendFile(path.join(viewsPath, 'deadlineKey.html'));
+});
+
+app.post('/deadline', async  (req, res) => {
+    if (req.body.referrer != 'https://lootdest.org/') {
+        res.json({key:""})
+    } else {
+
+        try {
+            const response = await fetch('https://betterkeysystem.sazawa.workers.dev/?key=IMGENERATINGANEWKEYRAHHHHHHHHHHHHHHH&type=DEADLINEFREE');
+        
+            if (!response.ok) {
+              const errorText = await response.text();
+              throw new Error(`HTTP error ${response.status}: ${errorText}`);
+            }
+        
+            const responseText = await response.text();
+            res.json({key:responseText})
+    
+        } catch (error) {
+            console.error("Error getting key:", error);
+            res.status(500).json({key:"Error getting key"});
+        }
+    }
+});
+
 
 const checkpointToKey = {
     [1]: "https://lootdest.org/s?RwLz3rc7",
