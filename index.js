@@ -45,7 +45,7 @@ app.get('/deadline', async  (req, res) => {
 });
 
 app.post('/deadline', async  (req, res) => {
-    if (req.body.referrer != 'https://lootdest.org/') {
+    if ((req.body.referrer != 'https://lootdest.org/') && (req.body.referrer != "https://loot-link.com/")) {
         res.json({key:""})
     } else {
 
