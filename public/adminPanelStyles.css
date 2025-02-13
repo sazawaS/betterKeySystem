@@ -78,7 +78,7 @@ button:hover {
     padding-right: 30px;
     border: 1px solid #333; /* Dark border */
     width: 80%;
-    max-width: 600px;
+    max-width: 700px;
     border-radius: 10px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
     animation: slideIn 0.3s ease;
@@ -171,12 +171,9 @@ form button:hover {
     background-color: #2c2c2c; /* Dark item background */
     border-radius: 5px;
     margin-bottom: 10px;
-    transition: transform 0.3s ease;
 }
 
-.script-item:hover, .key-item:hover {
-    transform: translateX(10px); /* Slide right on hover */
-}
+
 
 .script-item:last-child, .key-item:last-child {
     border-bottom: none;

@@ -54,8 +54,10 @@
                 <form id="createKeyForm">
                     <label for="keyName">Key:</label>
                     <input type="text" id="keyName" name="keyName" required>
-                    <label for="expireTimer">Expire Timer (in milliseconds):</label>
-                    <input type="number" id="expireTimer" name="expireTimer" required>
+                    <label for="hwid">Hwid:</label>
+                    <input type="text" id="hwid" name="hwid">
+                    <label for="expireTimer">Expires In:</label>
+                    <input type="text" id="expireTimer" name="expireTimer" required>
                     <label for="keyTypes">Types (comma-separated):</label>
                     <input type="text" id="keyTypes" name="keyTypes" required>
                     <button type="submit">Save Key</button>
@@ -90,6 +92,16 @@
             const keysList = document.getElementById('keysList');
 
             // Open Create Script Modal with Animation
+            function generate20LengthLetter()
+            {
+                const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                let result = '';
+                for (let i = 0; i < 20; i++) {
+                    const randomIndex = Math.floor(Math.random() * characters.length);
+                    result += characters.charAt(randomIndex);
+                }
+                return result;
+            }
             createScriptBtn.onclick = function() {
                 createScriptModal.style.display = 'block';
                 createScriptModal.style.animation = 'fadeIn 0.3s ease';
@@ -106,33 +118,28 @@
             createKeyBtn.onclick = function() {
                 createKeyModal.style.display = 'block';
                 createKeyModal.style.animation = 'fadeIn 0.3s ease';
+                document.getElementById('keyName').value = generate20LengthLetter()
             }
 
             // Open View Keys Modal with Animation
-            viewKeysBtn.onclick = function() {
+            viewKeysBtn.onclick = async function() {
                 viewKeysModal.style.display = 'block';
                 viewKeysModal.style.animation = 'fadeIn 0.3s ease';
-                fetchKeys();
+                await fetchKeys();
             }
 
             // Close Modals with Animation
             closeButtons.forEach(button => {
                 button.onclick = function() {
                     const modal = button.closest('.modal');
-                    modal.style.animation = 'fadeOut 0.3s ease';
-                    setTimeout(() => {
-                        modal.style.display = 'none';
-                    }, 300); // Match the animation duration
+                    modal.style.display = 'none';
                 }
             });
 
             // Close Modal when clicking outside of it
             window.onclick = function(event) {
                 if (event.target == createScriptModal || event.target == viewScriptsModal || event.target == createKeyModal || event.target == viewKeysModal) {
-                    event.target.style.animation = 'fadeOut 0.3s ease';
-                    setTimeout(() => {
-                        event.target.style.display = 'none';
-                    }, 300); // Match the animation duration
+                    event.target.style.display = 'none';
                 }
 }
 
@@ -152,24 +159,32 @@
             }
 
             // Handle Create Key Form Submission
-            createKeyForm.onsubmit = function(event) {
+            createKeyForm.onsubmit = async function(event) {
                 event.preventDefault();
                 const keyName = document.getElementById('keyName').value;
+                const hwid = document.getElementById("hwid").value;
                 const expireTimer = document.getElementById('expireTimer').value;
-                const keyTypes = document.getElementById('keyTypes').value.split(',');
+                const keyTypes = document.getElementById('keyTypes').value;
 
-                // Send data to server (you will handle this part)
-                console.log('Key:', keyName);
-                console.log('Expire Timer:', expireTimer);
-                console.log('Types:', keyTypes);
+                let data = {
+                    key: keyName,
+                    hwid: hwid,
+                    expiresIn: expireTimer,
+                    keyTypes: keyTypes,
+                }
+                if (!hwid || hwid == "")
+                {
+                    data.hwid = "unclaimed"
+                }
+                const url = "/admin/panel/createnewkey"
+                await POST(url, data)
 
-                // Clear form and close modal
                 createKeyForm.reset();
                 createKeyModal.style.display = 'none';
             }
 
             // Fetch Scripts from Server
-            function fetchScripts() {
+            async function fetchScripts() {
                 // Simulate a POST request to fetch scripts
                 // Replace this with actual fetch call to your server
                 const scripts = [
@@ -189,52 +204,95 @@
                 });
             }
 
+            function formatMilliseconds(milliseconds) {
+                const seconds = Math.floor(milliseconds / 1000);
+                const minutes = Math.floor(seconds / 60);
+                const hours = Math.floor(minutes / 60);
+                const days = Math.floor(hours / 24);
+
+                const remainingSeconds = seconds % 60;
+                const remainingMinutes = minutes % 60;
+                const remainingHours = hours % 24;
+
+                return {
+                    days: days,
+                    hours: remainingHours,
+                    minutes: remainingMinutes,
+                    seconds: remainingSeconds,
+                };
+            }
+            
             // Fetch Keys from Server
-            function fetchKeys() {
-                // Simulate a POST request to fetch keys
-                // Replace this with actual fetch call to your server
-                const keys = [
-                    { id: 1, key: 'mykey1', expireTimer: 1000 * 60 * 60, types: ['Script1', 'Script2'] },
-                    { id: 2, key: 'mykey2', expireTimer: 1000 * 60 * 30, types: ['Script3', 'Script4'] }
-                ];
+            async function fetchKeys() {
+                
+                keysList.innerHTML = 'Getting keys...'
+                const response = await fetch("/admin/panel/getkeys", {method:"POST"});
+                const keys = await response.json()
 
                 keysList.innerHTML = '';
-                keys.forEach(key => {
+                for (const [key,info] of Object.entries(keys))
+                {  
                     const keyItem = document.createElement('div');
+                    let expireTimer = "never";
+                    if (info.expirationDate != "never") {
+                        if (Date.now() >= info.expirationDate)
+                        {
+                            expireTimer = "expired"
+                        } else {
+                            const date = formatMilliseconds(info.expirationDate - Date.now());
+                            expireTimer = date.days + "d " + date.hours + "h " + date.minutes + "m " + date.seconds + "s"
+                        }
+                    }
                     keyItem.className = 'key-item';
                     keyItem.innerHTML = `
-                        <div>
-                            <strong>Key:</strong> ${key.key}<br>
-                            <strong>Time Left:</strong> ${key.expireTimer} ms<br>
-                            <strong>Types:</strong> ${key.types.join(', ')}
+                        <div class='key-info'>
+                            <strong>Key:</strong> ${key}<br>
+                            <strong>Hwid:</strong> ${info.hwid}<br>
+                            <strong>Time Left:</strong> ${expireTimer}<br>
+                            <strong>Types:</strong> ${info.types.join(', ')}
                         </div>
                         <div>
-                            <button class="edit-btn" onclick="editKey(${key.id})">Edit</button>
-                            <button class="delete-btn" onclick="deleteKey(${key.id})">Delete</button>
+                            <button class="edit-btn" id='expire-btn'>Expire</button>
+                            <button class="edit-btn" id='reset-hwid'>Reset HWID</button>
+                            <button class="delete-btn">Delete</button>
                         </div>
-                    `;
+                    `
+                    keyItem.querySelector('#expire-btn').addEventListener('click', () => {
+                        expireKey(key);
+                    })
+                    keyItem.querySelector('#reset-hwid').addEventListener('click', () => {
+                        clearHwidKey(key);
+                    })
+                    keyItem.querySelector('.delete-btn').addEventListener('click', () => {
+                        deleteKey(key);
+                    })
                     keysList.appendChild(keyItem);
+                }
+            }
+
+            //Key Edit System
+            async function POST(url, key) {
+                await fetch(url, {
+                    method:"POST",
+                    body:JSON.stringify({key:key}),
+                    headers:{"Content-type": "application/json; charset=UTF-8"}
                 });
             }
-
-            // Delete Script
-            window.deleteScript = function(scriptId) {
-                // Send request to delete script (you will handle this part)
-                console.log('Deleting script with ID:', scriptId);
-                fetchScripts(); // Refresh the list after deletion
+            window.expireKey = async function(key) {
+                const url = "/admin/panel/expirekey";
+                await POST(url, key);
+                await fetchKeys();
+            }
+            window.clearHwidKey = async function(key) {
+                const url = "/admin/panel/resethwid";
+                await POST(url, key);
+                await fetchKeys();
             }
 
-            // Edit Key
-            window.editKey = function(keyId) {
-                // Send request to edit key (you will handle this part)
-                console.log('Editing key with ID:', keyId);
-            }
-
-            // Delete Key
-            window.deleteKey = function(keyId) {
-                // Send request to delete key (you will handle this part)
-                console.log('Deleting key with ID:', keyId);
-                fetchKeys(); // Refresh the list after deletion
+            window.deleteKey = async function(key) {
+                const url = "/admin/panel/deletekey";
+                await POST(url, key);
+                await fetchKeys();
             }
         });
     </script>

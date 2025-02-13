@@ -70,7 +70,6 @@ app.post('/mmp/geturl', async (req, res) => {
     }
     if (userCheckpoint != 1 && req.body.referrer != "https://lootdest.org/") {
         res.clearCookie("checkpoint", {httpOnly:true});
-        console.log("tried a bypass, nuh uh! ", req.referrer)
         res.json({url:"",key:""})
         return;
     }
@@ -110,7 +109,6 @@ app.post('/mmp/leave', async(req,res) => {
 //ADMIN PANEL
 app.get('/admin/login', async (req,res) => {
     const isAdmin = req.cookies.admin;
-    console.log(req.cookies)
     if (isAdmin) {
         res.redirect('/admin/panel')
         return;
@@ -119,9 +117,8 @@ app.get('/admin/login', async (req,res) => {
 })
 app.post('/admin/login', async (req,res) => {
     if (req.body.password == "immaInstaLock123porn") {
-        res.cookie("admin", true, {maxAge: 1000 * 60 * 1, httpOnly: true});
+        res.cookie("admin", true, {maxAge: 1000 * 60 * 2, httpOnly: true});
         res.redirect('/admin/panel')
-        console.log("hey")
     }
 })
 
@@ -132,6 +129,86 @@ app.get('/admin/panel', async (req,res) => {
         return;
     }
     res.sendFile(path.join(viewsPath, 'adminPanel.html'));
+})
+
+app.post('/admin/panel/createnewkey', async (req,res) => {
+    const isAdmin = req.cookies.admin;
+    if (!isAdmin) {
+        res.json({invalid:true})
+        return;
+    }
+
+    const key = req.body.key;
+    let expireTimer = "never";
+    try {
+        if (key.expiresIn != "never") {
+            expireTimer = Date.now() + Number(key.expiresIn);
+        }
+    } catch(err) {
+        console.log(err)
+        res.status(400).send("wrong");
+        return;
+    }
+    const url = "https://betterkeysystem.sazawa.workers.dev/?req=1aFG2HDjgJM99j1TaZvCjEweUGH9b6N3USfnEpGaN0YkL9le64sCQimJNHnEaljI&type=createnewkey&key=" + key.key + "&hwid=" + key.hwid + "&expirationDate=" + expireTimer + "&types=" + key.keyTypes
+    const response = await fetch(url)
+    const text = await response.text()
+    res.status(response.status).send(text); 
+})
+app.post('/admin/panel/getkeys', async (req,res) => {
+    const isAdmin = req.cookies.admin;
+    if (!isAdmin) {
+        res.json({invalid:true})
+        return;
+    }
+
+    let keys = {}
+    try
+    {
+        const url = "https://betterkeysystem.sazawa.workers.dev/?req=1aFG2HDjgJM99j1TaZvCjEweUGH9b6N3USfnEpGaN0YkL9le64sCQimJNHnEaljI&type=getpaidkey"
+        const response =  await fetch(url)
+        const keys = await response.json()
+        res.json(keys);
+    }
+    catch (err)
+    {
+        console.log("Error occured while getting all paid keys", err)
+    }
+})
+
+app.post('/admin/panel/deletekey', async (req,res) => {
+    const isAdmin = req.cookies.admin;
+    if (!isAdmin) {
+        res.json({invalid:true})
+        return;
+    }
+    const url = "https://betterkeysystem.sazawa.workers.dev/?req=1aFG2HDjgJM99j1TaZvCjEweUGH9b6N3USfnEpGaN0YkL9le64sCQimJNHnEaljI&type=deletekey&key=" + req.body.key;
+    const response = await fetch(url);
+    const text = await response.text();
+    res.status(response.status).send(text);
+})
+
+app.post('/admin/panel/expirekey', async (req,res) => {
+    const isAdmin = req.cookies.admin;
+    if (!isAdmin) {
+        res.json({invalid:true})
+        return;
+    }
+    const url = "https://betterkeysystem.sazawa.workers.dev/?req=1aFG2HDjgJM99j1TaZvCjEweUGH9b6N3USfnEpGaN0YkL9le64sCQimJNHnEaljI&type=expirekey&key=" + req.body.key;
+    const response = await fetch(url);
+    const text = await response.text();
+    res.status(response.status).send(text);
+})
+
+app.post('/admin/panel/resethwid', async (req,res) => {
+    const isAdmin = req.cookies.admin;
+    if (!isAdmin) {
+        res.json({invalid:true})
+        return;
+    }
+    const url = "https://betterkeysystem.sazawa.workers.dev/?req=1aFG2HDjgJM99j1TaZvCjEweUGH9b6N3USfnEpGaN0YkL9le64sCQimJNHnEaljI&type=resethwid&key=" + req.body.key;
+    const response = await fetch(url);
+    const text = await response.text();
+    res.status(response.status).send(text);
 })
 
 app.listen(PORT, () => {
