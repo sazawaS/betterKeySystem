@@ -23,7 +23,7 @@ app.post('/mps4aside', async  (req, res) => {
     } else {
 
         try {
-            const response = await fetch('https://keysystem.sazawa.workers.dev/?key=GIVEMEKEYPLEASEIMLEGIT');
+            const response = await fetch('https://betterkeysystem.sazawa.workers.dev/?key=IMGENERATINGANEWKEYRAHHHHHHHHHHHHHHH&type=MPSFREE');
         
             if (!response.ok) {
               const errorText = await response.text();
