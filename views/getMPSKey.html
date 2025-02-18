@@ -22,6 +22,8 @@
             var gottenKeyOnce = false;
             const referer = document.referrer;
             var buttonElement = document.getElementById("getKey")
+            if (sessionStorage.getItem("is_reloaded")) gottenKeyOnce = true;
+            sessionStorage.setItem("is_reloaded", true);
             buttonElement.addEventListener("click", function(e) {
                 if (gottenKeyOnce) {return}
                 document.getElementById("key").innerHTML = "Getting key..."

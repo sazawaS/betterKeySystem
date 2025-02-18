@@ -79,6 +79,8 @@
         let des = false;
         let alreadyGot = false;
 
+        alert(urlParams.get("checkpoint"))
+
         fetch("/mmp/getcheckpoint", 
         { 
             method: "POST",
@@ -99,8 +101,11 @@
                 getKeyButton.innerHTML = "Get checkpoint"
             } else {
                 getKeyButton.innerHTML = "Get key"
+                if (sessionStorage.getItem("is_reloaded")) alreadyGot = true;
+                sessionStorage.setItem("is_reloaded", true);
             }
         })
+
 
         function animateSlider(targetCheckpoint) {
             const thumbWidth = sliderThumb.offsetWidth;
