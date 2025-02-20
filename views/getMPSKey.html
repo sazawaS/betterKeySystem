@@ -19,8 +19,9 @@
         </div>
 
         <script>
+            const params = new URLSearchParams(document.location.search);
+            const adToken = params.get("token")
             var gottenKeyOnce = false;
-            const referer = document.referrer;
             var buttonElement = document.getElementById("getKey")
             if (sessionStorage.getItem("is_reloaded")) gottenKeyOnce = true;
             sessionStorage.setItem("is_reloaded", true);
@@ -32,7 +33,7 @@
                 fetch("/mps4aside", 
                 { 
                     method: "POST",
-                    body: JSON.stringify({referrer:referer}),
+                    body: JSON.stringify({token:adToken}),
                     headers: {"Content-type": "application/json; charset=UTF-8"}
                 })
                 .then((response) => response.json())
@@ -42,13 +43,12 @@
                     if (keyRecieved != "") {
                         document.getElementById("key").innerHTML = "Key recieved: " + json.key;
                     } else {
-                        document.getElementById("key").innerHTML = "You tried skipping the lootlink. Or if you didnt, you have to change browsers.";
+                        document.getElementById("key").innerHTML = "You tried skipping the ad. Or if you didnt, you have to change browsers.";
                     }
                 });
                 gottenKeyOnce = true;
             });
 
-                // Snowflake Generation
                 function createSnowflakes() {
                 const snowflakesContainer = document.getElementById('snowflakes');
 
@@ -66,7 +66,6 @@
                 }
             }
 
-            // Snowflake Interaction
             document.addEventListener('mousemove', (e) => {
                 const snowflakes = document.querySelectorAll('.snowflake');
                 const mouseX = e.clientX;

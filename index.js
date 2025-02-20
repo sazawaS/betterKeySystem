@@ -18,25 +18,33 @@ app.get('/mps4aside', async  (req, res) => {
 });
 
 app.post('/mps4aside', async  (req, res) => {
-    if (req.body.referrer != 'https://lootdest.org/') {
-        res.json({key:""})
-    } else {
-
-        try {
-            const response = await fetch('https://betterkeysystem.sazawa.workers.dev/?key=IMGENERATINGANEWKEYRAHHHHHHHHHHHHHHH&type=MPSFREE');
-        
-            if (!response.ok) {
-              const errorText = await response.text();
-              throw new Error(`HTTP error ${response.status}: ${errorText}`);
-            }
-        
-            const responseText = await response.text();
-            res.json({key:responseText})
     
-        } catch (error) {
-            console.error("Error getting key:", error);
-            res.status(500).json({key:"Error getting key"});
+    const token = res.body.token;
+    const url = "https://work.ink/_api/v2/token/isValid/" + token + "?forbiddenOnFail=1";
+    const response = await fetch(url)
+    const resBody = await response.json()
+    const isValid = resBody.valid
+    console.log(resBody, isValid)
+    
+    if (!isValid) {
+        res.json({key:""})
+        return;
+    }
+
+    try {
+        const response = await fetch('https://betterkeysystem.sazawa.workers.dev/?key=IMGENERATINGANEWKEYRAHHHHHHHHHHHHHHH&type=MPSFREE');
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP error ${response.status}: ${errorText}`);
         }
+        
+        const responseText = await response.text();
+        res.json({key:responseText})
+    
+    } catch (error) {
+        console.error("Error getting key:", error);
+        res.status(500).json({key:"Error getting key"});
     }
 });
 
