@@ -52,25 +52,31 @@ app.get('/deadline', async  (req, res) => {
 });
 
 app.post('/deadline', async  (req, res) => {
-    if ((req.body.referrer != 'https://lootdest.org/') && (req.body.referrer != "https://loot-link.com/")) {
-        res.json({key:""})
-    } else {
-
-        try {
-            const response = await fetch('https://betterkeysystem.sazawa.workers.dev/?key=IMGENERATINGANEWKEYRAHHHHHHHHHHHHHHH&type=DEADLINEFREE');
-        
-            if (!response.ok) {
-              const errorText = await response.text();
-              throw new Error(`HTTP error ${response.status}: ${errorText}`);
-            }
-        
-            const responseText = await response.text();
-            res.json({key:responseText})
+    const token = req.body.token;
+    const url = "https://work.ink/_api/v2/token/isValid/" + token + "?deleteToken=1";
+    const response = await fetch(url)
+    const resBody = await response.json()
+    const isValid = resBody.valid
     
-        } catch (error) {
-            console.error("Error getting key:", error);
-            res.status(500).json({key:"Error getting key"});
+    if (!isValid) {
+        res.json({key:""})
+        return;
+    }
+
+    try {
+        const response = await fetch('https://betterkeysystem.sazawa.workers.dev/?key=IMGENERATINGANEWKEYRAHHHHHHHHHHHHHHH&type=DEADLINEFREE');
+    
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`HTTP error ${response.status}: ${errorText}`);
         }
+    
+        const responseText = await response.text();
+        res.json({key:responseText})
+
+    } catch (error) {
+        console.error("Error getting key:", error);
+        res.status(500).json({key:"Error getting key"});
     }
 });
 
