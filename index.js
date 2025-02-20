@@ -19,12 +19,11 @@ app.get('/mps4aside', async  (req, res) => {
 
 app.post('/mps4aside', async  (req, res) => {
     
-    const token = res.body.token;
-    const url = "https://work.ink/_api/v2/token/isValid/" + token + "?forbiddenOnFail=1";
+    const token = req.body.token;
+    const url = "https://work.ink/_api/v2/token/isValid/" + token + "?deleteToken=1";
     const response = await fetch(url)
     const resBody = await response.json()
     const isValid = resBody.valid
-    console.log(resBody, isValid)
     
     if (!isValid) {
         res.json({key:""})
