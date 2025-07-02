@@ -68,144 +68,36 @@
             });
         });
         createSnowflakes()
-        const sliderThumb = document.getElementById("sliderThumb");
-        const keyDisplay = document.getElementById("key");
-        const getKeyButton = document.getElementById("getKey");
-        const urlParams = new URLSearchParams(window.location.search);
-        const referer = document.referrer;
-        let checkpoint = 1;
-        let nextUrl = ""
-        let key = ""
-        let des = false;
-        let alreadyGot = false;
-        
-        fetch("/mmp/getcheckpoint", 
-        { 
-            method: "POST",
-            body: JSON.stringify({referrer:referer}),
-            headers: {"Content-type": "application/json; charset=UTF-8"}
-        })
-        .then((response) => response.json())
-        .then((json)=> {
-            const recievedCheckpoint = json.checkpoint;
-            checkpoint = recievedCheckpoint;
-            console.log(checkpoint)
-            if (checkpoint > 1) {
-                setSliderPosition(checkpoint - 1);
-                animateSlider(checkpoint)
-            }
-            keyDisplay.innerHTML = "Progress: " + (checkpoint-1) + "/2"
-            if (checkpoint < 3) {
-                getKeyButton.innerHTML = "Get checkpoint"
-            } else {
-                getKeyButton.innerHTML = "Get key"
-                if (sessionStorage.getItem("is_reloaded")) alreadyGot = true;
-                sessionStorage.setItem("is_reloaded", true);
-            }
-        })
 
+        const params = new URLSearchParams(document.location.search);
+        const adToken = params.get("token")
+        var gottenKeyOnce = false;
+        var buttonElement = document.getElementById("getKey")
+        if (sessionStorage.getItem("is_reloaded")) gottenKeyOnce = true;
+        sessionStorage.setItem("is_reloaded", true);
+        buttonElement.addEventListener("click", function(e) {
+            if (gottenKeyOnce) {return}
+            document.getElementById("key").innerHTML = "Getting key..."
+            document.getElementById("key").classList.add("getting");
 
-        function animateSlider(targetCheckpoint) {
-            const thumbWidth = sliderThumb.offsetWidth;
-            const trackWidth = document.querySelector('.slider-track').offsetWidth;
-            const startPosition = parseFloat(sliderThumb.style.left) || 0; // Current position or 0
-            const endPosition = ((targetCheckpoint - 1) / 2) * (trackWidth - thumbWidth);
-
-            const sliderFill = document.getElementById('sliderFill'); // Get the filled track
-            const startFillWidth = parseFloat(sliderFill.style.width) || 0; // Current fill width or 0
-            const endFillWidth = ((targetCheckpoint - 1) / 2) * trackWidth; // Target fill width
-
-            let currentPosition = startPosition;
-            let currentFillWidth = startFillWidth;
-            const duration = 150; // Animation duration in milliseconds
-            const startTime = performance.now();
-
-            // Cubic easing function
-            function easeInOutCubic(t) {
-                return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-            }
-
-            function step(timestamp) {
-                const elapsed = timestamp - startTime;
-                const progress = Math.min(elapsed / duration, 1); // Progress (0 to 1)
-                const easedProgress = easeInOutCubic(progress); // Apply cubic easing
-
-                // Update thumb position
-                currentPosition = startPosition + (endPosition - startPosition) * easedProgress;
-                sliderThumb.style.left = currentPosition + "px";
-
-                // Update fill width
-                currentFillWidth = startFillWidth + (endFillWidth - startFillWidth) * easedProgress;
-                sliderFill.style.width = currentFillWidth + "px";
-
-                if (progress < 1) {
-                    requestAnimationFrame(step);
-                }
-            }
-
-            requestAnimationFrame(step);
-        }
-
-
-        function setSliderPosition(checkpoint) {
-            const thumbWidth = sliderThumb.offsetWidth;
-            const trackWidth = document.querySelector('.slider-track').offsetWidth;
-            const position = ((checkpoint - 1) / 2) * (trackWidth - thumbWidth);
-            sliderThumb.style.left = position + "px";
-        }
-
-        getKeyButton.addEventListener("click", () => {
-
-            if (alreadyGot) { return }
-            alreadyGot = true;
-
-            keyDisplay.classList.add("getting")
-            if (checkpoint == 3) {
-                keyDisplay.innerHTML = "Getting your key..."
-            } else {
-                keyDisplay.innerHTML = "Getting your link..."
-            }
-
-            fetch("/mmp/geturl", 
+            fetch("/mmp", 
             { 
                 method: "POST",
-                body: JSON.stringify({referrer:referer}),
+                body: JSON.stringify({token:adToken}),
                 headers: {"Content-type": "application/json; charset=UTF-8"}
             })
             .then((response) => response.json())
-            .then((json)=> {
-
-                if (checkpoint != 3) {
-                    const recievedUrl = json.url;
-                    console.log(recievedUrl);
-                    if (recievedUrl == "") {
-                        keyDisplay.innerHTML = "Warning! You seem to have tried to bypass the link! Please close this tab and open a new one to try again!"
-                    } else { 
-                        des = true;
-                        window.location.href = recievedUrl;
-                    }
-                    return;
-                }
-
-                const recievedKey = json.key;
-                keyDisplay.classList.remove("getting")
-                console.log(recievedKey)
-                if (recievedKey == "") {
-                    keyDisplay.innerHTML = "Warning! You seem to have tried to bypass the link! Please close this tab and open a new one to try again!"
+            .then((json) => {
+                const keyRecieved = json.key
+                document.getElementById("key").classList.remove("getting");
+                if (keyRecieved != "") {
+                    document.getElementById("key").innerHTML = "Key recieved: " + json.key;
                 } else {
-                    keyDisplay.innerHTML = "Your key is: " + recievedKey;
+                    document.getElementById("key").innerHTML = "You tried skipping the keysystem, or you already claimed a key. If you didn't, try changing browsers.";
                 }
-
-
-            })
+            });
+            gottenKeyOnce = true;
         });
-
-        window.addEventListener('beforeunload', function (e) {
-            if (des == false) {
-                fetch("/mmp/leave", {method: "POST"})
-            }
-        });
-
 
     </script>
 </body>
