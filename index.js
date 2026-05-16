@@ -115,6 +115,40 @@ app.post('/mmp', async (req,res)=> {
 })
 
 
+//-----BLOXSTRIKE KEY-------//
+app.get('/bloxstrike', async (req, res) => {
+    res.sendFile(path.join(viewsPath, 'bloxStrikeKey.html'));
+});
+
+app.post('/bloxstrike', async (req, res) => {
+    const token = req.body.token;
+    const url = "https://work.ink/_api/v2/token/isValid/" + token + "?deleteToken=1";
+    const response = await fetch(url);
+    const resBody = await response.json();
+    const isValid = resBody.valid;
+
+    if (!isValid) {
+        res.json({ key: "" });
+        return;
+    }
+
+    try {
+        const response = await fetch('https://betterkeysystem.sazawa.workers.dev/?key=IMGENERATINGANEWKEYRAHHHHHHHHHHHHHHH&type=BLOXSTRIKEFREE');
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP error ${response.status}: ${errorText}`);
+        }
+
+        const responseText = await response.text();
+        res.json({ key: responseText });
+
+    } catch (error) {
+        console.error("Error getting key:", error);
+        res.status(500).json({ key: "Error getting key" });
+    }
+});
+
 
 
 
