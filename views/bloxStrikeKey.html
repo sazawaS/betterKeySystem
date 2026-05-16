@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>BloxStrike Key System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/bloxStrikeStyles.css">
+</head>
+<body>
+    <canvas id="webCanvas"></canvas>
+
+    <div id="getKeyContainer">
+        <div class="logo-icon"></div>
+        <h1>BloxStrike</h1>
+        <p class="subtitle">Key System</p>
+        <p id="key">Get Key Here:</p>
+        <button id="getKey">Get Key</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('webCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, nodes;
+        const mouse = { x: -9999, y: -9999 };
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        function createNodes(count) {
+            nodes = [];
+            for (let i = 0; i < count; i++) {
+                const ox = Math.random() * width;
+                const oy = Math.random() * height;
+                nodes.push({
+                    ox, oy,         // origin — where the node naturally lives
+                    x: ox, y: oy,   // current position
+                    vx: 0, vy: 0,
+                    r: Math.random() * 2 + 1.5,
+                    // slow idle drift
+                    driftAngle: Math.random() * Math.PI * 2,
+                    driftSpeed: Math.random() * 0.003 + 0.001,
+                    driftRadius: Math.random() * 18 + 6,
+                });
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+
+            const CONN_DIST  = 130;
+            const MOUSE_DIST = 110;
+            const NUDGE      = 22;    // max pixels a node is pushed away
+            const SPRING     = 0.06; // how fast it springs back to origin
+            const DAMP       = 0.82;
+
+            const t = performance.now();
+
+            for (const n of nodes) {
+                // Idle drift around origin
+                const driftX = n.ox + Math.cos(n.driftAngle + t * n.driftSpeed) * n.driftRadius;
+                const driftY = n.oy + Math.sin(n.driftAngle + t * n.driftSpeed) * n.driftRadius;
+
+                const dx = mouse.x - n.x;
+                const dy = mouse.y - n.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                let targetX = driftX;
+                let targetY = driftY;
+
+                if (dist < MOUSE_DIST && dist > 0) {
+                    // Push node slightly away from mouse, capped at NUDGE px
+                    const pushFactor = (1 - dist / MOUSE_DIST) * NUDGE;
+                    targetX = driftX - (dx / dist) * pushFactor;
+                    targetY = driftY - (dy / dist) * pushFactor;
+                }
+
+                // Spring toward target
+                n.vx = (n.vx + (targetX - n.x) * SPRING) * DAMP;
+                n.vy = (n.vy + (targetY - n.y) * SPRING) * DAMP;
+                n.x += n.vx;
+                n.y += n.vy;
+            }
+
+            // Edges between nearby nodes
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const a = nodes[i], b = nodes[j];
+                    const dx = a.x - b.x, dy = a.y - b.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < CONN_DIST) {
+                        const alpha = (1 - dist / CONN_DIST) * 0.45;
+                        ctx.beginPath();
+                        ctx.moveTo(a.x, a.y);
+                        ctx.lineTo(b.x, b.y);
+                        ctx.strokeStyle = `rgba(245, 197, 24, ${alpha})`;
+                        ctx.lineWidth = 0.7;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            // Mouse highlight lines
+            for (const n of nodes) {
+                const dx = mouse.x - n.x, dy = mouse.y - n.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < MOUSE_DIST) {
+                    const alpha = (1 - dist / MOUSE_DIST) * 0.75;
+                    ctx.beginPath();
+                    ctx.moveTo(n.x, n.y);
+                    ctx.lineTo(mouse.x, mouse.y);
+                    ctx.strokeStyle = `rgba(255, 130, 0, ${alpha})`;
+                    ctx.lineWidth = 1.1;
+                    ctx.stroke();
+                }
+            }
+
+            // Nodes
+            for (const n of nodes) {
+                const dx = mouse.x - n.x, dy = mouse.y - n.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const glow = dist < MOUSE_DIST ? (1 - dist / MOUSE_DIST) : 0;
+
+                if (glow > 0.1) {
+                    ctx.beginPath();
+                    ctx.arc(n.x, n.y, n.r + glow * 9, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 130, 0, ${glow * 0.13})`;
+                    ctx.fill();
+                }
+
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, n.r + glow * 2, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(245, 197, 24, ${0.4 + glow * 0.6})`;
+                ctx.fill();
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        window.addEventListener('resize', () => { resize(); createNodes(130); });
+        window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+        window.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
+
+        resize();
+        createNodes(130);
+        draw();
+
+        // ── Key Logic ──
+        const params = new URLSearchParams(document.location.search);
+        const adToken = params.get("token");
+        var gottenKeyOnce = false;
+        var buttonElement = document.getElementById("getKey");
+
+        if (sessionStorage.getItem("bs_reloaded")) gottenKeyOnce = true;
+        sessionStorage.setItem("bs_reloaded", true);
+
+        buttonElement.addEventListener("click", function (e) {
+            if (gottenKeyOnce) return;
+            document.getElementById("key").innerHTML = "Getting key...";
+            document.getElementById("key").classList.add("getting");
+
+            fetch("/bloxstrike", {
+                method: "POST",
+                body: JSON.stringify({ token: adToken }),
+                headers: { "Content-type": "application/json; charset=UTF-8" }
+            })
+            .then(response => response.json())
+            .then(json => {
+                const keyReceived = json.key;
+                document.getElementById("key").classList.remove("getting");
+                if (keyReceived && keyReceived !== "") {
+                    document.getElementById("key").innerHTML = "Key received: " + keyReceived;
+                    document.getElementById("key").classList.add("success");
+                } else {
+                    document.getElementById("key").innerHTML = "You tried skipping the key system, or you already claimed a key. If you didn't, try changing browsers.";
+                    document.getElementById("key").classList.add("error");
+                }
+            });
+
+            gottenKeyOnce = true;
+        });
+    </script>
+</body>
+</html>
